@@ -294,7 +294,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Управление записью</div>
-    <div class="modal-sub" id="modal-sub">Что вы хотите сделать с этой записью?</div>
+    <div class="modal-sub">Что вы хотите сделать с этой записью?</div>
     <div class="modal-info">
       <div class="srow"><span class="lbl">👨‍⚕️ Врач</span><span class="val" id="modal-doc">—</span></div>
       <div class="srow"><span class="lbl">🗓 Дата и время</span><span class="val" id="modal-dt">—</span></div>
@@ -548,13 +548,20 @@ function showMyRes(bookings) {
   }).join('');
 }
 
-function openModal(idx) {
+async function openModal(idx) {
   activeBookingIdx = idx;
   const b = currentBookings[idx];
   document.getElementById('modal-doc').textContent = b.doctor;
   document.getElementById('modal-dt').textContent = b.datetime;
   document.getElementById('modal-sub').textContent = 'Что вы хотите сделать с этой записью?';
   document.getElementById('booking-modal').classList.remove('hidden');
+  // Загружаем слоты заранее пока пользователь смотрит на модал
+  if (b.can_modify) {
+    try {
+      const data = await (await fetch(`${API}/api/slots`)).json();
+      rsSlots = (data.slots || []).filter(s => s.available);
+    } catch(e) { rsSlots = []; }
+  }
 }
 
 function closeModal(e) {
@@ -592,12 +599,8 @@ async function modalAction(action) {
     rsSelDate = null; rsSelSlot = null;
     document.getElementById('rs-slots').innerHTML =
       '<div style="grid-column:1/-1;text-align:center;color:var(--text3);padding:12px;font-size:13px">Выберите дату выше</div>';
-    // Загружаем слоты
-    try {
-      const data = await (await fetch(`${API}/api/slots`)).json();
-      rsSlots = (data.slots || []).filter(s => s.available);
-      renderRsDates();
-    } catch(e) { rsSlots = []; }
+    // Слоты уже загружены заранее
+    renderRsDates();
     document.getElementById('reschedule-modal').classList.remove('hidden');
   }
 }
