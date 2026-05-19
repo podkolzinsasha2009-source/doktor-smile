@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ — Доктор Смайл</title>
+
+<style>
+:root {
+  --bg: #0f1117; --bg2: #1a1d27; --bg3: #222536; --bg4: #2a2e40;
+  --text: #f0f0f0; --text2: #9a9db5; --text3: #555870;
+  --border: #2e3248; --accent: #4f7cff; --accent2: #3d66e8;
+  --success: #2ecc71; --danger: #e74c3c; --warn: #f39c12;
+  --card: #1a1d27; --radius: 14px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+/* ── Login ── */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 380px; box-shadow: var(--shadow); text-align: center; }
+.login-logo { font-size: 48px; margin-bottom: 12px; }
+.login-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.login-sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+.login-input { width: 100%; padding: 13px 16px; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 12px; color: var(--text); font-size: 15px; font-family: inherit; outline: none; margin-bottom: 12px; transition: border-color 0.15s; }
+.login-input:focus { border-color: var(--accent); }
+.login-btn { width: 100%; padding: 14px; background: var(--accent); border: none; border-radius: 12px; color: white; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+.login-btn:hover { background: var(--accent2); }
+.login-err { color: var(--danger); font-size: 13px; margin-top: 10px; }
+
+/* ── Layout ── */
+.app { display: none; }
+.app.visible { display: block; }
+.topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 16px; height: 60px; position: sticky; top: 0; z-index: 100; }
+.topbar-logo { font-size: 22px; }
+.topbar-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.topbar-sub { font-size: 12px; color: var(--text2); }
+.topbar-time { margin-left: auto; font-size: 12px; color: var(--text2); font-weight: 500; }
+.topbar-logout { padding: 7px 14px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--text2); font-size: 12px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+.topbar-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── Tabs ── */
+.tabs { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); background: var(--bg2); }
+.tab { padding: 10px 18px; border-radius: 10px 10px 0 0; font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer; border: 1px solid transparent; border-bottom: none; transition: all 0.15s; }
+.tab.active { background: var(--bg); color: var(--accent); border-color: var(--border); }
+.tab:hover:not(.active) { color: var(--text); }
+
+/* ── Content ── */
+.content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+/* ── Stats ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+.stat-icon { font-size: 22px; margin-bottom: 8px; }
+.stat-val { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 12px; color: var(--text2); font-weight: 500; }
+.stat-card.blue .stat-val  { color: var(--accent); }
+.stat-card.green .stat-val { color: var(--success); }
+.stat-card.red .stat-val   { color: var(--danger); }
+.stat-card.warn .stat-val  { color: var(--warn); }
+.stat-card.white .stat-val { color: var(--text); }
+
+/* ── Toolbar ── */
+.toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.search-input { flex: 1; min-width: 200px; padding: 10px 14px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.15s; }
+.search-input:focus { border-color: var(--accent); }
+.filter-select { padding: 10px 14px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; }
+.refresh-btn { padding: 10px 16px; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; color: var(--text2); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+.refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+.refresh-btn.spinning { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Table ── */
+.table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+thead { background: var(--bg3); }
+th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
+td { padding: 13px 16px; font-size: 13px; border-top: 1px solid var(--border); vertical-align: middle; }
+tr:hover td { background: rgba(79,124,255,0.04); }
+.name-cell { font-weight: 600; color: var(--text); }
+.phone-cell { color: var(--accent); font-weight: 500; font-family: monospace; font-size: 13px; }
+.doctor-cell { color: var(--text2); max-width: 180px; }
+.dt-cell { white-space: nowrap; }
+.dt-date { font-weight: 600; color: var(--text); }
+.dt-time { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.past { opacity: 0.5; }
+
+/* ── Status badge ── */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.badge-ok  { background: rgba(46,204,113,0.12); color: var(--success); }
+.badge-no  { background: rgba(231,76,60,0.12);  color: var(--danger); }
+.badge-mv  { background: rgba(243,156,18,0.12); color: var(--warn); }
+
+/* ── Status select ── */
+.status-select { padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); color: var(--text); font-size: 12px; font-family: inherit; cursor: pointer; outline: none; }
+
+/* ── Schedule view ── */
+.schedule-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.nav-btn { padding: 8px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; color: var(--text2); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.nav-date { font-size: 16px; font-weight: 700; color: var(--text); min-width: 160px; text-align: center; }
+.today-btn { padding: 8px 14px; background: var(--accent); border: none; border-radius: 10px; color: white; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; }
+
+.schedule-grid { display: grid; gap: 8px; }
+.schedule-row { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: start; }
+.time-label { font-size: 13px; font-weight: 700; color: var(--text2); padding-top: 12px; text-align: right; }
+.slot-cell { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; min-height: 54px; display: flex; align-items: center; }
+.slot-cell.empty { color: var(--text3); font-size: 12px; }
+.slot-cell.booked { border-color: var(--accent); background: rgba(79,124,255,0.06); }
+.slot-cell.cancelled { border-color: var(--danger); background: rgba(231,76,60,0.05); opacity: 0.6; }
+.slot-cell.rescheduled { border-color: var(--warn); background: rgba(243,156,18,0.05); }
+.slot-cell.past-slot { opacity: 0.4; }
+.slot-name { font-weight: 700; font-size: 14px; }
+.slot-doctor { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.slot-phone { font-size: 12px; color: var(--accent); margin-top: 2px; font-family: monospace; }
+
+.loading { text-align: center; padding: 60px; color: var(--text2); }
+.loading::before { content:''; display:block; width:32px; height:32px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin:0 auto 14px; }
+.empty-state { text-align: center; padding: 60px; color: var(--text2); }
+.empty-state .ei { font-size: 48px; display: block; margin-bottom: 12px; }
+.page { display: none; }
+.page.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">🦷</div>
+    <div class="login-title">Доктор Смайл</div>
+    <div class="login-sub">Административная панель</div>
+    <div style="position:relative;margin-bottom:12px">
+      <input class="login-input" type="password" id="pwd-input" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')doLogin()" autofocus style="margin-bottom:0;padding-right:44px" />
+      <button onclick="togglePwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--text2)" id="eye-btn">
+        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Войти →</button>
+    <div class="login-err hidden" id="login-err">Неверный пароль</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="topbar-logo">🦷</div>
+    <div>
+      <div class="topbar-title">Доктор Смайл</div>
+      <div class="topbar-sub">Административная панель</div>
+    </div>
+    <div class="topbar-time" id="topbar-time"></div>
+    <button class="topbar-logout" onclick="logout()">Выйти</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('schedule')" id="tab-schedule">📅 Расписание</div>
+    <div class="tab" onclick="showTab('all')" id="tab-all">📋 Все записи</div>
+    <div class="tab" onclick="showTab('stats')" id="tab-stats">📊 Статистика</div>
+  </div>
+
+  <div class="content">
+
+    <!-- РАСПИСАНИЕ -->
+    <div class="page active" id="page-schedule">
+      <div class="schedule-nav">
+        <button class="nav-btn" onclick="scheduleDay(-1)">← Назад</button>
+        <div class="nav-date" id="schedule-date-label">—</div>
+        <button class="nav-btn" onclick="scheduleDay(+1)">Вперёд →</button>
+        <input type="date" id="date-picker" onchange="pickDate(this.value)" style="padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer" />
+        <button class="today-btn" onclick="goToday()">Сегодня</button>
+      </div>
+      <div id="schedule-content"><div class="loading"></div></div>
+    </div>
+
+    <!-- ВСЕ ЗАПИСИ -->
+    <div class="page" id="page-all">
+      <div class="toolbar">
+        <input class="search-input" type="text" placeholder="🔍 Поиск по имени, телефону, врачу..." oninput="filterTable()" id="search-input" />
+        <select class="filter-select" onchange="filterTable()" id="filter-status">
+          <option value="">Все статусы</option>
+          <option value="Подтверждено">✅ Подтверждено</option>
+          <option value="Перенесено">🔄 Перенесено</option>
+          <option value="Отменено">❌ Отменено</option>
+        </select>
+        <select class="filter-select" onchange="filterTable()" id="filter-period">
+          <option value="">Все даты</option>
+          <option value="today">Сегодня</option>
+          <option value="week">Эта неделя</option>
+          <option value="future">Будущие</option>
+          <option value="past">Прошедшие</option>
+        </select>
+        <button class="refresh-btn" onclick="loadData()" id="refresh-btn">↻ Обновить</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Пациент</th>
+              <th>Телефон</th>
+              <th>Врач</th>
+              <th>Дата и время</th>
+              <th>Статус</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr><td colspan="6"><div class="loading"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text2)" id="table-count"></div>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div class="page" id="page-stats">
+      <div class="stats-grid" id="stats-grid">
+        <div class="loading"></div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px" id="stats-doctors"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = 'https://doktor-smile.onrender.com';
+let pwd = '';
+let allBookings = [];
+let scheduleDate = new Date();
+
+// ── Время в шапке ────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('topbar-time').textContent =
+    now.toLocaleString('ru', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Логин ────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const p = document.getElementById('pwd-input').value.trim();
+  if (!p) return;
+  try {
+    const r = await fetch(`${API}/api/admin/all_bookings?password=${encodeURIComponent(p)}`);
+    if (r.ok) {
+      pwd = p;
+      document.getElementById('login-wrap').style.display = 'none';
+      document.getElementById('app').classList.add('visible');
+      const data = await r.json();
+      allBookings = data.bookings || [];
+      renderAll();
+      renderStats(data.stats || {});
+      renderSchedule();
+    } else {
+      document.getElementById('login-err').classList.remove('hidden');
+    }
+  } catch(e) {
+    document.getElementById('login-err').textContent = 'Ошибка соединения с сервером';
+    document.getElementById('login-err').classList.remove('hidden');
+  }
+}
+
+function logout() {
+  pwd = ''; allBookings = [];
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-wrap').style.display = '';
+  document.getElementById('pwd-input').value = '';
+}
+
+// ── Загрузка данных ───────────────────────────────────────────────────────────
+async function loadData() {
+  const btn = document.getElementById('refresh-btn');
+  btn.textContent = '↻ Загрузка...'; btn.disabled = true;
+  try {
+    const r = await fetch(`${API}/api/admin/all_bookings?password=${encodeURIComponent(pwd)}`);
+    const data = await r.json();
+    allBookings = data.bookings || [];
+    renderAll();
+    renderStats(data.stats || {});
+    renderSchedule();
+  } catch(e) { alert('Ошибка загрузки'); }
+  btn.textContent = '↻ Обновить'; btn.disabled = false;
+}
+
+// ── Табы ─────────────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+// ── Хелперы дат ──────────────────────────────────────────────────────────────
+function parseDt(str) {
+  if (!str) return null;
+  const m = str.match(/(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2})/);
+  if (!m) return null;
+  return new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5]);
+}
+
+function fmtDate(d) {
+  return d.toLocaleDateString('ru', { day:'2-digit', month:'long', year:'numeric', weekday:'long' });
+}
+
+function isToday(dt) {
+  const now = new Date();
+  return dt && dt.getDate()===now.getDate() && dt.getMonth()===now.getMonth() && dt.getFullYear()===now.getFullYear();
+}
+
+function isSameDay(dt, d) {
+  return dt && dt.getDate()===d.getDate() && dt.getMonth()===d.getMonth() && dt.getFullYear()===d.getFullYear();
+}
+
+// ── Таблица всех записей ─────────────────────────────────────────────────────
+function filterTable() {
+  const q      = document.getElementById('search-input').value.toLowerCase();
+  const status = document.getElementById('filter-status').value;
+  const period = document.getElementById('filter-period').value;
+  const now    = new Date();
+
+  const filtered = allBookings.filter(b => {
+    const dt = parseDt(b.datetime);
+    if (q && !`${b.name} ${b.phone} ${b.doctor} ${b.datetime}`.toLowerCase().includes(q)) return false;
+    if (status && b.status !== status) return false;
+    if (period === 'today'  && !isToday(dt)) return false;
+    if (period === 'future' && (!dt || dt <= now)) return false;
+    if (period === 'past'   && (!dt || dt >  now)) return false;
+    if (period === 'week') {
+      const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7);
+      if (!dt || dt < now || dt > weekEnd) return false;
+    }
+    return true;
+  });
+
+  renderTableRows(filtered);
+}
+
+function renderAll() { filterTable(); }
+
+function renderTableRows(rows) {
+  const now = new Date();
+  const sc = { 'Подтверждено':'badge-ok','Отменено':'badge-no','Перенесено':'badge-mv' };
+  const si = { 'Подтверждено':'✅','Отменено':'❌','Перенесено':'🔄' };
+
+  if (!rows.length) {
+    document.getElementById('table-body').innerHTML =
+      '<tr><td colspan="6"><div class="empty-state"><span class="ei">📋</span>Записей не найдено</div></td></tr>';
+    document.getElementById('table-count').textContent = '';
+    return;
+  }
+
+  document.getElementById('table-body').innerHTML = rows.map(b => {
+    const dt   = parseDt(b.datetime);
+    const past = dt && dt < now;
+    const [datePart, timePart] = b.datetime.split(' ');
+    return `<tr class="${past ? 'past' : ''}">
+      <td class="name-cell">${b.name || '—'}</td>
+      <td class="phone-cell">${formatPhone(b.phone)}</td>
+      <td class="doctor-cell">${shortDoctor(b.doctor)}</td>
+      <td class="dt-cell">
+        <div class="dt-date">${datePart || '—'}</div>
+        <div class="dt-time">${timePart || ''}</div>
+      </td>
+      <td><span class="badge ${sc[b.status]||'badge-ok'}">${si[b.status]||'✅'} ${b.status}</span></td>
+      <td>
+        <select class="status-select" onchange="changeStatus(${b.row}, this.value, this)">
+          <option value="Подтверждено" ${b.status==='Подтверждено'?'selected':''}>✅ Подтверждено</option>
+          <option value="Перенесено"   ${b.status==='Перенесено'  ?'selected':''}>🔄 Перенесено</option>
+          <option value="Отменено"     ${b.status==='Отменено'    ?'selected':''}>❌ Отменено</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-count').textContent = `Показано: ${rows.length} из ${allBookings.length}`;
+}
+
+function formatPhone(p) {
+  const d = p.replace(/\D/g,'');
+  if (d.length === 11) return `+7 (${d.slice(1,4)}) ${d.slice(4,7)}-${d.slice(7,9)}-${d.slice(9,11)}`;
+  return p;
+}
+
+function shortDoctor(name) {
+  const parts = name.trim().split(' ');
+  if (parts.length >= 3) return `${parts[0]} ${parts[1][0]}.${parts[2][0]}.`;
+  return name;
+}
+
+// ── Изменение статуса ────────────────────────────────────────────────────────
+async function changeStatus(row, newStatus, el) {
+  el.disabled = true;
+  try {
+    const r = await fetch(`${API}/api/admin/update_status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd, row, status: newStatus })
+    });
+    if (r.ok) {
+      const b = allBookings.find(x => x.row === row);
+      if (b) b.status = newStatus;
+      renderSchedule();
+      renderStats(calcStats());
+    } else {
+      const d = await r.json();
+      alert(d.detail || 'Ошибка');
+      el.value = allBookings.find(x => x.row === row)?.status || '';
+    }
+  } catch(e) { alert('Ошибка соединения'); }
+  el.disabled = false;
+}
+
+// ── Расписание ───────────────────────────────────────────────────────────────
+const HOURS = [8,9,10,11,12,13,14,15,16,17,18,19];
+const WEEKDAYS = ['вс','пн','вт','ср','чт','пт','сб'];
+const MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+
+function scheduleDay(delta) {
+  scheduleDate = new Date(scheduleDate);
+  scheduleDate.setDate(scheduleDate.getDate() + delta);
+  renderSchedule();
+}
+
+function togglePwd() {
+  const inp = document.getElementById('pwd-input');
+  const icon = document.getElementById('eye-icon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+function pickDate(val) {
+  if (!val) return;
+  const [y, m, d] = val.split('-').map(Number);
+  scheduleDate = new Date(y, m - 1, d);
+  renderSchedule();
+}
+
+function goToday() {
+  scheduleDate = new Date();
+  renderSchedule();
+}
+
+function renderSchedule() {
+  const d    = scheduleDate;
+  const now  = new Date();
+  const wday = WEEKDAYS[d.getDay()];
+  document.getElementById('schedule-date-label').textContent =
+    `${wday}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  // Синхронизируем пикер
+  const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  document.getElementById('date-picker').value = iso;
+
+  const dayBookings = allBookings.filter(b => {
+    const dt = parseDt(b.datetime);
+    return dt && isSameDay(dt, d);
+  });
+
+  const sc = { 'Подтверждено':'booked','Отменено':'cancelled','Перенесено':'rescheduled' };
+  const si = { 'Подтверждено':'✅','Отменено':'❌','Перенесено':'🔄' };
+
+  const rows = HOURS.map(h => {
+    const timeStr = `${String(h).padStart(2,'0')}:00`;
+    const booking = dayBookings.find(b => {
+      const dt = parseDt(b.datetime);
+      return dt && dt.getHours() === h;
+    });
+    const isPast = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h+1) < now;
+
+    if (booking) {
+      return `<div class="schedule-row">
+        <div class="time-label">${timeStr}</div>
+        <div class="slot-cell ${sc[booking.status]||'booked'} ${isPast?'past-slot':''}">
+          <div>
+            <div class="slot-name">${si[booking.status]} ${booking.name || '—'}</div>
+            <div class="slot-doctor">👨‍⚕️ ${booking.doctor}</div>
+            <div class="slot-phone">📞 ${formatPhone(booking.phone)}</div>
+          </div>
+        </div>
+      </div>`;
+    } else {
+      return `<div class="schedule-row">
+        <div class="time-label">${timeStr}</div>
+        <div class="slot-cell empty ${isPast?'past-slot':''}">свободно</div>
+      </div>`;
+    }
+  }).join('');
+
+  document.getElementById('schedule-content').innerHTML =
+    `<div class="schedule-grid">${rows}</div>`;
+}
+
+// ── Статистика ────────────────────────────────────────────────────────────────
+function calcStats() {
+  const now   = new Date();
+  const today = now.toLocaleDateString('ru');
+  let confirmed=0, cancelled=0, rescheduled=0, todayCount=0, total=allBookings.length;
+  allBookings.forEach(b => {
+    if (b.status==='Подтверждено')  confirmed++;
+    if (b.status==='Отменено')      cancelled++;
+    if (b.status==='Перенесено')    rescheduled++;
+    const dt = parseDt(b.datetime);
+    if (dt && isToday(dt) && b.status!=='Отменено') todayCount++;
+  });
+  return { total, confirmed, cancelled, rescheduled, today: todayCount };
+}
+
+function renderStats(stats) {
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card white"><div class="stat-icon">📋</div><div class="stat-val">${stats.total||0}</div><div class="stat-lbl">Всего записей</div></div>
+    <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val">${stats.confirmed||0}</div><div class="stat-lbl">Подтверждено</div></div>
+    <div class="stat-card red"><div class="stat-icon">❌</div><div class="stat-val">${stats.cancelled||0}</div><div class="stat-lbl">Отменено</div></div>
+    <div class="stat-card warn"><div class="stat-icon">🔄</div><div class="stat-val">${stats.rescheduled||0}</div><div class="stat-lbl">Перенесено</div></div>
+    <div class="stat-card blue"><div class="stat-icon">📅</div><div class="stat-val">${stats.today||0}</div><div class="stat-lbl">Сегодня</div></div>
+  `;
+
+  // Статистика по врачам
+  const doctorMap = {};
+  allBookings.forEach(b => {
+    if (!doctorMap[b.doctor]) doctorMap[b.doctor] = { total:0, confirmed:0, cancelled:0 };
+    doctorMap[b.doctor].total++;
+    if (b.status==='Подтверждено') doctorMap[b.doctor].confirmed++;
+    if (b.status==='Отменено')     doctorMap[b.doctor].cancelled++;
+  });
+
+  const doctorRows = Object.entries(doctorMap).map(([doc, s]) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-weight:600;font-size:14px">${doc}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">Всего: ${s.total}</div>
+      </div>
+      <div style="display:flex;gap:10px;font-size:13px">
+        <span style="color:var(--success);font-weight:600">✅ ${s.confirmed}</span>
+        <span style="color:var(--danger);font-weight:600">❌ ${s.cancelled}</span>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('stats-doctors').innerHTML = `
+    <div style="font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px">По врачам</div>
+    ${doctorRows || '<div style="color:var(--text2);padding:20px 0">Нет данных</div>'}
+  `;
+}
+</script>
+</body>
+</html>
