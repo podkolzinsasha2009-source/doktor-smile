@@ -151,6 +151,7 @@ def generate_slots():
 
 
 def find_row(all_values, phone_clean, doctor, dt_raw):
+    """Ищет строку по телефону, врачу и дате."""
     if not all_values:
         return None
     idx = get_col_indices([h.strip() for h in all_values[0]])
@@ -161,6 +162,22 @@ def find_row(all_values, phone_clean, doctor, dt_raw):
         if (rp == phone_clean
                 and row[idx["doctor"]] == doctor
                 and row[idx["dt"]].strip().lstrip("'").strip() == dt_raw.strip()
+                and row[idx["status"]] in ("Подтверждено", "Перенесено")):
+            return i, row, idx
+    return None
+
+
+def find_row_any_date(all_values, phone_clean, doctor):
+    """Ищет строку по телефону и врачу без проверки даты — для отмены перенесённых."""
+    if not all_values:
+        return None
+    idx = get_col_indices([h.strip() for h in all_values[0]])
+    for i, row in enumerate(all_values[1:], start=2):
+        while len(row) <= max(idx.values()):
+            row.append("")
+        rp = re.sub(r'\D', '', row[idx["phone"]])
+        if (rp == phone_clean
+                and row[idx["doctor"]] == doctor
                 and row[idx["status"]] in ("Подтверждено", "Перенесено")):
             return i, row, idx
     return None
@@ -380,7 +397,10 @@ async def cancel_booking(req: CancelRequest):
         sheet       = get_sheet()
         all_values  = sheet.get_all_values()
         phone_clean = re.sub(r'\D', '', req.phone)
+        # Сначала ищем по дате, если не нашли — ищем без даты (перенесённые)
         found = find_row(all_values, phone_clean, req.doctor, req.datetime)
+        if not found:
+            found = find_row_any_date(all_values, phone_clean, req.doctor)
         if not found:
             raise HTTPException(status_code=404, detail="Запись не найдена")
         row_i, row, idx = found
