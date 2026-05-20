@@ -2837,6 +2837,10 @@ function togglePwd() {
     icon.className = 'fa-regular fa-eye';
   }
 }
+document.querySelector('form').addEventListener('submit', function() {
+  var inp = document.getElementById('pwd');
+  inp.type = 'password';
+});
 </script>
 </body>
 </html>"""
@@ -2848,7 +2852,7 @@ def get_admin_panel():
 
 
 @app.post("/secret-admin-panel", response_class=HTMLResponse)
-async def post_admin_panel(password: str = Form(...)):
+async def post_admin_panel(password: str = Form(..., alias="password")):
     expected = os.environ.get("ADMIN_PASSWORD", "doktor2026").strip()
     if password.strip() != expected:
         return HTMLResponse(
