@@ -2742,61 +2742,70 @@ _LOGIN_HTML = r"""<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Доктор Смайл — Вход</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-    background: #020c1b;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .card {
-    background: rgba(5,18,40,0.85);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    padding: 40px 32px;
-    width: 100%;
-    max-width: 360px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-  }
-  .logo { font-size: 36px; text-align: center; margin-bottom: 8px; }
-  h1 { color: #e2efff; font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 4px; }
-  .sub { color: #6fa3cc; font-size: 13px; text-align: center; margin-bottom: 28px; }
-  label { display: block; color: #6fa3cc; font-size: 11px; font-weight: 600;
-          text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
-  input[type=password] {
-    width: 100%; padding: 13px 16px;
-    background: rgba(9,30,53,0.8);
-    border: 1.5px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    color: #e2efff; font-size: 15px; font-family: inherit;
-    outline: none; transition: border-color 0.15s;
-    margin-bottom: 16px;
-  }
-  input[type=password]:focus { border-color: #4aa8ff; }
-  button {
-    width: 100%; padding: 14px;
-    background: #4aa8ff; color: white;
-    border: none; border-radius: 12px;
-    font-size: 15px; font-weight: 700; font-family: inherit;
-    cursor: pointer; transition: background 0.15s;
-  }
-  button:hover { background: #2888e8; }
-  .err { color: #ff453a; font-size: 13px; text-align: center; margin-top: 14px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    background: radial-gradient(circle at 20% 20%, #082046, transparent 40%), radial-gradient(circle at 80% 80%, #031430, transparent 40%), #020c1b !important;
-    background-attachment: fixed !important;
-    color: #ffffff !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at 20% 20%, #082046, transparent 40%),
+              radial-gradient(circle at 80% 80%, #031430, transparent 40%),
+              #020c1b;
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2efff;
 }
-.glass, .card, .modal-content, form, .login-card, [id^="login-form"] {
-    background: rgba(255, 255, 255, 0.03) !important;
-    backdrop-filter: blur(35px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(35px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+.card {
+  background: rgba(5, 18, 40, 0.55);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255,255,255,0.06) inset;
 }
+.logo { font-size: 36px; text-align: center; margin-bottom: 8px; }
+h1 { color: #e2efff; font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+.sub { color: #6fa3cc; font-size: 13px; text-align: center; margin-bottom: 28px; }
+label {
+  display: block; color: #6fa3cc; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px;
+}
+.pwd-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+.pwd-wrap input {
+  width: 100%; padding: 13px 44px 13px 16px;
+  background: rgba(9, 30, 53, 0.8);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #e2efff; font-size: 15px; font-family: inherit;
+  outline: none; transition: border-color 0.15s;
+}
+.pwd-wrap input:focus { border-color: #4aa8ff; }
+.eye-btn {
+  position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+  cursor: pointer; color: rgba(255, 255, 255, 0.6); z-index: 10;
+  background: none; border: none; padding: 0; font-size: 15px;
+  display: flex; align-items: center;
+  transition: color 0.15s;
+}
+.eye-btn:hover { color: #4aa8ff; }
+.submit-btn {
+  width: 100%; padding: 14px;
+  background: #4aa8ff; color: white;
+  border: none; border-radius: 12px;
+  font-size: 15px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: background 0.15s;
+}
+.submit-btn:hover { background: #2888e8; }
+.err { color: #ff453a; font-size: 13px; text-align: center; margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -2805,12 +2814,30 @@ body {
   <h1>Доктор Смайл</h1>
   <div class="sub">Панель администратора</div>
   <form method="get" action="/secret-admin-panel">
-    <label>Пароль</label>
-    <input type="password" name="password" placeholder="Введите пароль" autofocus />
-    <button type="submit">Войти</button>
+    <label for="pwd">Пароль</label>
+    <div class="pwd-wrap">
+      <input id="pwd" type="password" name="password" placeholder="Введите пароль" autofocus />
+      <button type="button" class="eye-btn" onclick="togglePwd()" aria-label="Показать пароль">
+        <i id="eye-icon" class="fa-regular fa-eye"></i>
+      </button>
+    </div>
+    <button type="submit" class="submit-btn">Войти</button>
   </form>
   {error}
 </div>
+<script>
+function togglePwd() {
+  var inp  = document.getElementById('pwd');
+  var icon = document.getElementById('eye-icon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.className = 'fa-regular fa-eye-slash';
+  } else {
+    inp.type = 'password';
+    icon.className = 'fa-regular fa-eye';
+  }
+}
+</script>
 </body>
 </html>"""
 
