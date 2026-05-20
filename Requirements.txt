@@ -6,3 +6,4 @@ pytz
 pydantic
 httpx
 python-dotenv
+python-multipart
