@@ -4,123 +4,576 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Админ — Доктор Смайл</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f1117; --bg2: #1a1d27; --bg3: #222536; --bg4: #2a2e40;
-  --text: #f0f0f0; --text2: #9a9db5; --text3: #555870;
-  --border: #2e3248; --accent: #4f7cff; --accent2: #3d66e8;
-  --success: #2ecc71; --danger: #e74c3c; --warn: #f39c12;
-  --card: #1a1d27; --radius: 14px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --bg:          #020c1b;
+  --bg2:         #051628;
+  --bg3:         #091e35;
+  --glass:       rgba(5, 18, 40, 0.55);
+  --glass2:      rgba(9, 30, 53, 0.65);
+  --glass-hdr:   rgba(2, 8, 22, 0.82);
+  --glass-modal: rgba(3, 10, 26, 0.90);
+  --text:        #e2efff;
+  --text2:       #6fa3cc;
+  --text3:       #2d5577;
+  --border:      rgba(255, 255, 255, 0.07);
+  --border-blue: rgba(74, 168, 255, 0.22);
+  --border-hover:rgba(255, 255, 255, 0.14);
+  --accent:      #4aa8ff;
+  --accent2:     #2888e8;
+  --success:     #30d158;
+  --danger:      #ff453a;
+  --warn:        #ff9f0a;
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.30);
+  --shadow:      0 8px 32px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.25);
+  --shadow-lg:   0 16px 48px rgba(0,0,0,0.60), 0 4px 16px rgba(0,0,0,0.30);
+  --glow:        0 0 28px rgba(74,168,255,0.22);
+  --radius:      16px;
+  --ease-expo:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 5%,  rgba(14, 60, 140, 0.40) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 90%, rgba(5, 28, 100, 0.32) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(8, 25, 80, 0.15) 0%, transparent 70%),
+    #020c1b;
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
 
 /* ── Login ── */
-.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.login-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 380px; box-shadow: var(--shadow); text-align: center; }
-.login-logo { font-size: 48px; margin-bottom: 12px; }
-.login-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-.login-sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
-.login-input { width: 100%; padding: 13px 16px; background: var(--bg3); border: 1.5px solid var(--border); border-radius: 12px; color: var(--text); font-size: 15px; font-family: inherit; outline: none; margin-bottom: 12px; transition: border-color 0.15s; }
-.login-input:focus { border-color: var(--accent); }
-.login-btn { width: 100%; padding: 14px; background: var(--accent); border: none; border-radius: 12px; color: white; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.15s; }
-.login-btn:hover { background: var(--accent2); }
-.login-err { color: var(--danger); font-size: 13px; margin-top: 10px; }
+.login-wrap {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.login-card {
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    var(--shadow-lg);
+  border-radius: 24px;
+  padding: 40px 36px;
+  width: 100%; max-width: 380px;
+  text-align: center;
+  transition: border-color 0.25s ease;
+}
+.login-card:hover { border-color: var(--border-hover); }
 
-/* ── Layout ── */
+/* Pulsing clickable tooth logo for login */
+.login-logo-btn {
+  width: 72px; height: 72px; border-radius: 22px; margin: 0 auto 18px;
+  background: linear-gradient(145deg, rgba(74,168,255,0.22), rgba(74,168,255,0.06));
+  border: 1px solid rgba(74,168,255,0.38);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); cursor: pointer;
+  transition: transform 0.35s var(--ease-expo), box-shadow 0.35s ease, border-color 0.2s ease;
+  animation: logo-pulse 3.2s ease-in-out infinite;
+  -webkit-animation: logo-pulse 3.2s ease-in-out infinite;
+  box-shadow: 0 8px 28px rgba(74,168,255,0.22), 0 1px 0 rgba(255,255,255,0.08) inset;
+}
+.login-logo-btn svg { width: 36px; height: 36px; }
+.login-logo-btn:active { transform: scale(0.88) !important; animation-play-state: paused; }
+.login-logo-btn:hover  { border-color: rgba(74,168,255,0.55); animation-play-state: paused; }
+
+.login-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+.login-sub   { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+.login-input {
+  width: 100%; padding: 13px 16px;
+  background: rgba(5,18,40,0.55);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--border); border-radius: 12px; color: var(--text);
+  font-size: 15px; font-family: inherit; outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.login-input::placeholder { color: var(--text3); }
+.login-input:focus {
+  border-color: rgba(74,168,255,0.50);
+  background: rgba(5,18,40,0.72);
+  box-shadow: 0 0 0 3px rgba(74,168,255,0.12), 0 1px 0 rgba(255,255,255,0.04) inset;
+}
+.login-btn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(145deg, #3da5f5 0%, #1e7ad8 100%);
+  border: none; border-radius: 12px;
+  color: white; font-size: 15px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(74,168,255,0.38), 0 1px 0 rgba(255,255,255,0.10) inset;
+  transition: transform 0.4s var(--ease-expo), box-shadow 0.25s ease;
+  will-change: transform;
+}
+.login-btn:hover { box-shadow: 0 6px 28px rgba(74,168,255,0.50), 0 1px 0 rgba(255,255,255,0.10) inset; }
+.login-btn:active { transform: scale(0.97); transition-duration: 0.08s; }
+.login-err { color: var(--danger); font-size: 13px; margin-top: 10px; }
+.hidden { display: none !important; }
+
+/* ── App layout ── */
 .app { display: none; }
 .app.visible { display: block; }
-.topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 16px; height: 60px; position: sticky; top: 0; z-index: 100; }
-.topbar-logo { font-size: 22px; }
-.topbar-title { font-size: 16px; font-weight: 800; color: var(--text); }
-.topbar-sub { font-size: 12px; color: var(--text2); }
-.topbar-time { margin-left: auto; font-size: 12px; color: var(--text2); font-weight: 500; }
-.topbar-logout { padding: 7px 14px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--text2); font-size: 12px; font-family: inherit; cursor: pointer; transition: all 0.15s; }
-.topbar-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── Topbar ── */
+.topbar {
+  background: var(--glass-hdr);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 20px rgba(0,0,0,0.35);
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 14px;
+  height: 62px; position: sticky; top: 0; z-index: 100;
+}
+
+/* Pulsing clickable tooth logo for topbar */
+.topbar-logo-btn {
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px;
+  background: linear-gradient(145deg, rgba(74,168,255,0.22), rgba(74,168,255,0.06));
+  border: 1px solid rgba(74,168,255,0.35);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); cursor: pointer;
+  transition: transform 0.35s var(--ease-expo), box-shadow 0.35s ease, border-color 0.2s ease;
+  animation: logo-pulse 3.2s ease-in-out infinite;
+  -webkit-animation: logo-pulse 3.2s ease-in-out infinite;
+}
+.topbar-logo-btn svg { width: 20px; height: 20px; }
+.topbar-logo-btn:active { transform: scale(0.88) !important; animation-play-state: paused; }
+.topbar-logo-btn:hover  { border-color: rgba(74,168,255,0.55); box-shadow: 0 0 20px rgba(74,168,255,0.30); animation-play-state: paused; }
+
+@keyframes logo-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(74,168,255,0.0); }
+  45%     { box-shadow: 0 0 0 5px rgba(74,168,255,0.16), 0 0 18px rgba(74,168,255,0.22); }
+}
+
+.topbar-title { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+.topbar-sub   { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.topbar-time  { margin-left: auto; font-size: 12px; color: var(--text2); font-weight: 500; }
+.topbar-logout {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px; background: none;
+  color: var(--text2); font-size: 12px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  transition: transform 0.4s var(--ease-expo), border-color 0.2s ease, color 0.2s ease;
+  will-change: transform;
+}
+.topbar-logout:hover  { border-color: rgba(255,69,58,0.45); color: var(--danger); }
+.topbar-logout:active { transform: scale(0.95); transition-duration: 0.07s; }
 
 /* ── Tabs ── */
-.tabs { display: flex; gap: 4px; padding: 16px 24px 0; border-bottom: 1px solid var(--border); background: var(--bg2); }
-.tab { padding: 10px 18px; border-radius: 10px 10px 0 0; font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer; border: 1px solid transparent; border-bottom: none; transition: all 0.15s; }
-.tab.active { background: var(--bg); color: var(--accent); border-color: var(--border); }
+.tabs {
+  display: flex; gap: 4px; padding: 14px 24px 0;
+  border-bottom: 1px solid var(--border);
+  background: rgba(2, 8, 22, 0.78);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
+  position: sticky; top: 62px; z-index: 99;
+}
+.tab {
+  padding: 10px 18px;
+  border-radius: 10px 10px 0 0;
+  font-size: 13px; font-weight: 600;
+  color: var(--text2); cursor: pointer;
+  border: 1px solid transparent; border-bottom: none;
+  display: flex; align-items: center; gap: 7px;
+  transition: color 0.25s var(--ease-expo), background 0.25s var(--ease-expo), border-color 0.25s ease;
+  will-change: transform;
+}
+.tab .tab-ico { display: flex; align-items: center; }
+.tab .tab-ico svg { width: 15px; height: 15px; stroke: currentColor; }
+.tab.active {
+  background: rgba(5, 18, 40, 0.70);
+  color: var(--accent); border-color: var(--border);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset;
+}
 .tab:hover:not(.active) { color: var(--text); }
+.tab:active { transform: scale(0.96); transition-duration: 0.07s; }
 
 /* ── Content ── */
 .content { padding: 24px; max-width: 1400px; margin: 0 auto; }
 
-/* ── Stats ── */
+/* ── Stat cards ── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
-.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
-.stat-icon { font-size: 22px; margin-bottom: 8px; }
-.stat-val { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
-.stat-lbl { font-size: 12px; color: var(--text2); font-weight: 500; }
-.stat-card.blue .stat-val  { color: var(--accent); }
-.stat-card.green .stat-val { color: var(--success); }
-.stat-card.red .stat-val   { color: var(--danger); }
-.stat-card.warn .stat-val  { color: var(--warn); }
-.stat-card.white .stat-val { color: var(--text); }
+.stat-card {
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, var(--shadow);
+  border-radius: var(--radius); padding: 18px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.35s var(--ease-expo);
+  will-change: transform;
+}
+.stat-card:hover { border-color: var(--border-hover); box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, var(--glow), var(--shadow); }
+.stat-icon {
+  width: 34px; height: 34px; border-radius: 10px; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(74,168,255,0.10); border: 1px solid rgba(74,168,255,0.18);
+  color: var(--accent);
+}
+.stat-icon svg { width: 17px; height: 17px; }
+.stat-val  { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.stat-lbl  { font-size: 12px; color: var(--text2); font-weight: 500; }
+.stat-card.blue  .stat-icon { background: rgba(74,168,255,0.12);  border-color: rgba(74,168,255,0.22);  color: var(--accent); }
+.stat-card.green .stat-icon { background: rgba(48,209,88,0.12);   border-color: rgba(48,209,88,0.22);   color: var(--success); }
+.stat-card.red   .stat-icon { background: rgba(255,69,58,0.12);   border-color: rgba(255,69,58,0.22);   color: var(--danger); }
+.stat-card.warn  .stat-icon { background: rgba(255,159,10,0.12);  border-color: rgba(255,159,10,0.22);  color: var(--warn); }
+.stat-card.white .stat-icon { background: rgba(226,239,255,0.08); border-color: rgba(226,239,255,0.14); color: var(--text2); }
+.stat-card.blue  .stat-val  { color: var(--accent); }
+.stat-card.green .stat-val  { color: var(--success); }
+.stat-card.red   .stat-val  { color: var(--danger); }
+.stat-card.warn  .stat-val  { color: var(--warn); }
+.stat-card.white .stat-val  { color: var(--text); }
 
 /* ── Toolbar ── */
-.toolbar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-.search-input { flex: 1; min-width: 200px; padding: 10px 14px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.15s; }
-.search-input:focus { border-color: var(--accent); }
-.filter-select { padding: 10px 14px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; cursor: pointer; }
-.refresh-btn { padding: 10px 16px; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; color: var(--text2); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-.refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
-.refresh-btn.spinning { animation: spin 1s linear infinite; }
+.toolbar {
+  display: flex; gap: 10px; margin-bottom: 16px;
+  flex-wrap: wrap; align-items: center;
+}
+.search-input {
+  flex: 1; min-width: 200px;
+  padding: 10px 14px;
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 14px; font-family: inherit;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.search-input::placeholder { color: var(--text3); }
+.search-input:focus {
+  border-color: rgba(74,168,255,0.50);
+  background: rgba(5,18,40,0.72);
+  box-shadow: 0 0 0 3px rgba(74,168,255,0.12);
+}
+.filter-select {
+  padding: 10px 14px;
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 13px; font-family: inherit;
+  outline: none; cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.filter-select:focus { border-color: rgba(74,168,255,0.50); }
+.filter-select option { background: #091e35; color: var(--text); }
+.refresh-btn {
+  padding: 10px 16px;
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text2); font-size: 13px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  transition: transform 0.4s var(--ease-expo), border-color 0.2s ease, color 0.2s ease;
+  will-change: transform;
+}
+.refresh-btn:hover  { border-color: var(--border-blue); color: var(--accent); }
+.refresh-btn:active { transform: scale(0.96); transition-duration: 0.07s; }
+.refresh-btn .r-ico { display: flex; align-items: center; transition: transform 0.4s var(--ease-expo); }
+.refresh-btn.spinning .r-ico { animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Table ── */
-.table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.table-wrap {
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, var(--shadow);
+  border-radius: var(--radius); overflow: hidden;
+}
 table { width: 100%; border-collapse: collapse; }
-thead { background: var(--bg3); }
-th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; }
+thead { background: rgba(9, 30, 53, 0.70); }
+th {
+  padding: 12px 16px; text-align: left;
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap;
+}
 td { padding: 13px 16px; font-size: 13px; border-top: 1px solid var(--border); vertical-align: middle; }
-tr:hover td { background: rgba(79,124,255,0.04); }
-.name-cell { font-weight: 600; color: var(--text); }
-.phone-cell { color: var(--accent); font-weight: 500; font-family: monospace; font-size: 13px; }
+tr:hover td { background: rgba(74,168,255,0.04); }
+.name-cell   { font-weight: 600; color: var(--text); }
+.phone-cell  { color: var(--accent); font-weight: 500; font-family: monospace; font-size: 13px; }
 .doctor-cell { color: var(--text2); max-width: 180px; }
-.dt-cell { white-space: nowrap; }
-.dt-date { font-weight: 600; color: var(--text); }
-.dt-time { font-size: 12px; color: var(--text2); margin-top: 2px; }
-.past { opacity: 0.5; }
+.dt-cell     { white-space: nowrap; }
+.dt-date     { font-weight: 600; color: var(--text); }
+.dt-time     { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.past        { opacity: 0.5; }
 
 /* ── Status badge ── */
-.badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-.badge-ok  { background: rgba(46,204,113,0.12); color: var(--success); }
-.badge-no  { background: rgba(231,76,60,0.12);  color: var(--danger); }
-.badge-mv  { background: rgba(243,156,18,0.12); color: var(--warn); }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.badge svg { width: 10px; height: 10px; }
+.badge-ok { background: rgba(48,209,88,0.12);  color: var(--success); }
+.badge-no { background: rgba(255,69,58,0.12);   color: var(--danger); }
+.badge-mv { background: rgba(255,159,10,0.12);  color: var(--warn); }
 
 /* ── Status select ── */
-.status-select { padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg3); color: var(--text); font-size: 12px; font-family: inherit; cursor: pointer; outline: none; }
+.status-select {
+  padding: 5px 8px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(9, 30, 53, 0.60);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  color: var(--text); font-size: 12px;
+  font-family: inherit; cursor: pointer; outline: none;
+  transition: border-color 0.2s ease;
+}
+.status-select:focus { border-color: rgba(74,168,255,0.50); }
+.status-select option { background: #091e35; }
 
-/* ── Schedule view ── */
-.schedule-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.nav-btn { padding: 8px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; color: var(--text2); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; }
-.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-.nav-date { font-size: 16px; font-weight: 700; color: var(--text); min-width: 160px; text-align: center; }
-.today-btn { padding: 8px 14px; background: var(--accent); border: none; border-radius: 10px; color: white; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; }
+/* ── Schedule nav ── */
+.schedule-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.nav-btn {
+  padding: 8px 16px;
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text2); font-size: 13px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  transition: transform 0.4s var(--ease-expo), border-color 0.2s ease, color 0.2s ease;
+  will-change: transform;
+}
+.nav-btn:hover  { border-color: var(--border-blue); color: var(--accent); }
+.nav-btn:active { transform: scale(0.95); transition-duration: 0.07s; }
+.nav-date { font-size: 15px; font-weight: 700; color: var(--text); min-width: 180px; text-align: center; }
+.today-btn {
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #3da5f5, #1e7ad8);
+  border: none; border-radius: 10px;
+  color: white; font-size: 12px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  box-shadow: 0 2px 12px rgba(74,168,255,0.35), 0 1px 0 rgba(255,255,255,0.10) inset;
+  transition: transform 0.4s var(--ease-expo), box-shadow 0.25s ease;
+  will-change: transform;
+}
+.today-btn:hover  { box-shadow: 0 4px 20px rgba(74,168,255,0.50), 0 1px 0 rgba(255,255,255,0.10) inset; }
+.today-btn:active { transform: scale(0.95); transition-duration: 0.07s; }
+.date-picker-admin {
+  padding: 8px 12px;
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 13px; font-family: inherit;
+  outline: none; cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.date-picker-admin:focus { border-color: rgba(74,168,255,0.50); }
+.date-picker-admin::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(5) hue-rotate(180deg); }
 
+/* ── Schedule grid ── */
 .schedule-grid { display: grid; gap: 8px; }
 .schedule-row { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: start; }
-.time-label { font-size: 13px; font-weight: 700; color: var(--text2); padding-top: 12px; text-align: right; }
-.slot-cell { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; min-height: 54px; display: flex; align-items: center; }
-.slot-cell.empty { color: var(--text3); font-size: 12px; }
-.slot-cell.booked { border-color: var(--accent); background: rgba(79,124,255,0.06); }
-.slot-cell.cancelled { border-color: var(--danger); background: rgba(231,76,60,0.05); opacity: 0.6; }
-.slot-cell.rescheduled { border-color: var(--warn); background: rgba(243,156,18,0.05); }
+.time-label { font-size: 13px; font-weight: 700; color: var(--text2); padding-top: 14px; text-align: right; }
+.slot-cell {
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, var(--shadow-sm);
+  border-radius: 12px; padding: 12px 16px; min-height: 54px;
+  display: flex; align-items: center;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.slot-cell.empty     { color: var(--text3); font-size: 12px; }
+.slot-cell.booked    { border-color: rgba(74,168,255,0.35); background: rgba(74,168,255,0.07); box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 0 16px rgba(74,168,255,0.12); }
+.slot-cell.cancelled { border-color: rgba(255,69,58,0.30); background: rgba(255,69,58,0.05); opacity: 0.65; }
+.slot-cell.rescheduled { border-color: rgba(255,159,10,0.30); background: rgba(255,159,10,0.05); }
 .slot-cell.past-slot { opacity: 0.4; }
-.slot-name { font-weight: 700; font-size: 14px; }
-.slot-doctor { font-size: 12px; color: var(--text2); margin-top: 2px; }
-.slot-phone { font-size: 12px; color: var(--accent); margin-top: 2px; font-family: monospace; }
+.slot-name   { font-weight: 700; font-size: 14px; color: var(--text); }
+.slot-meta   { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); margin-top: 2px; }
+.slot-meta svg { width: 11px; height: 11px; flex-shrink: 0; opacity: 0.7; }
+.slot-phone  { font-size: 12px; color: var(--accent); margin-top: 2px; font-family: monospace; display: flex; align-items: center; gap: 5px; }
+.slot-phone svg { width: 11px; height: 11px; flex-shrink: 0; opacity: 0.7; }
 
+/* ── Stats doctors panel ── */
+.stats-doctors-wrap {
+  background: var(--glass);
+  backdrop-filter: blur(35px) saturate(180%);
+  -webkit-backdrop-filter: blur(35px) saturate(180%);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, var(--shadow);
+  border-radius: var(--radius); padding: 20px;
+}
+.stats-doctors-title {
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 7px;
+}
+.stats-doctors-title svg { width: 14px; height: 14px; opacity: 0.7; }
+.doctor-stat-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+  transition: padding-left 0.25s var(--ease-expo);
+}
+.doctor-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+.doctor-stat-badges { display: flex; gap: 8px; font-size: 13px; }
+.doctor-stat-ok  { color: var(--success); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.doctor-stat-no  { color: var(--danger);  font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.doctor-stat-ok svg, .doctor-stat-no svg { width: 12px; height: 12px; }
+
+/* ── Loading / Empty ── */
 .loading { text-align: center; padding: 60px; color: var(--text2); }
-.loading::before { content:''; display:block; width:32px; height:32px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; margin:0 auto 14px; }
+.loading::before {
+  content: ''; display: block; width: 28px; height: 28px;
+  border: 2px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+  margin: 0 auto 14px;
+}
 .empty-state { text-align: center; padding: 60px; color: var(--text2); }
-.empty-state .ei { font-size: 48px; display: block; margin-bottom: 12px; }
+.empty-state .ei { display: block; margin: 0 auto 12px; opacity: 0.4; }
+.empty-state .ei svg { width: 48px; height: 48px; }
+
+/* ── Page tab content ── */
 .page { display: none; }
-.page.active { display: block; }
+.page.active { display: block; animation: fadeUp 0.45s var(--ease-expo) both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Modals ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(1, 4, 14, 0.75);
+  backdrop-filter: blur(6px) saturate(140%);
+  -webkit-backdrop-filter: blur(6px) saturate(140%);
+  z-index: 200; display: flex; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.25s ease both;
+}
+.modal-overlay.hidden { display: none !important; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+.modal-sheet {
+  background: var(--glass-modal);
+  backdrop-filter: blur(45px) saturate(210%);
+  -webkit-backdrop-filter: blur(45px) saturate(210%);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-bottom: none;
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.07) inset,
+    0 -40px 80px rgba(0,0,0,0.65),
+    0 -8px 32px rgba(0,0,0,0.40);
+  border-radius: 26px 26px 0 0;
+  padding: 20px 16px 34px;
+  width: 100%; max-width: 480px;
+  animation: slideUp 0.44s var(--ease-expo) both;
+}
+@keyframes slideUp { from{transform:translateY(100%);opacity:0.6} to{transform:translateY(0);opacity:1} }
+
+.modal-handle {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,0.14);
+  border-radius: 2px; margin: 0 auto 20px;
+}
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+.modal-sub   { font-size: 13px; color: var(--text2); margin-bottom: 18px; line-height: 1.5; }
+
+/* ── Srow (modal info rows) ── */
+.srow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 0; font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.srow:last-child { border-bottom: none; padding-bottom: 0; }
+.srow:first-child { padding-top: 0; }
+.srow .lbl { color: var(--text2); font-weight: 500; }
+.srow .val { font-weight: 600; color: var(--text); text-align: right; }
+.modal-info {
+  background: rgba(9,30,53,0.55);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: 14px; padding: 12px 14px; margin-bottom: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset;
+}
+
+/* ── Buttons ── */
+.btn {
+  width: 100%; padding: 14px; border: none; border-radius: 13px;
+  font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer;
+  transition: transform 0.4s var(--ease-expo), box-shadow 0.25s ease, opacity 0.15s ease;
+  will-change: transform;
+}
+.btn:active { transform: scale(0.97); transition-duration: 0.08s, 0.08s, 0.08s; }
+.btn-close {
+  background: rgba(9,30,53,0.45); color: var(--text2);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  margin-top: 10px;
+}
+.btn-close:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* ── О клинике modal specifics ── */
+.clinic-logo-display {
+  width: 72px; height: 72px; border-radius: 22px; margin: 0 auto;
+  background: linear-gradient(145deg, rgba(74,168,255,0.24), rgba(74,168,255,0.06));
+  border: 1px solid rgba(74,168,255,0.35);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  box-shadow: 0 8px 28px rgba(74,168,255,0.25), 0 1px 0 rgba(255,255,255,0.08) inset;
+  animation: logo-pulse 3.2s ease-in-out infinite;
+  -webkit-animation: logo-pulse 3.2s ease-in-out infinite;
+}
+.clinic-logo-display svg { width: 38px; height: 38px; }
+
+.clinic-stats-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px;
+}
+.clinic-stat {
+  background: rgba(74,168,255,0.07);
+  border: 1px solid rgba(74,168,255,0.16);
+  border-radius: 12px; padding: 12px 8px; text-align: center;
+}
+.clinic-stat-num { font-size: 22px; font-weight: 800; color: var(--accent); line-height: 1; }
+.clinic-stat-lbl { font-size: 10px; color: var(--text2); margin-top: 3px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+
+.clinic-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.clinic-feature {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+  background: rgba(9,30,53,0.50);
+  backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset;
+}
+.clinic-feature-icon {
+  width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+  background: rgba(74,168,255,0.12);
+  border: 1px solid rgba(74,168,255,0.20);
+  display: flex; align-items: center; justify-content: center; color: var(--accent);
+}
+.clinic-feature-icon svg { width: 17px; height: 17px; }
+.clinic-feature-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.clinic-feature-desc  { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .content { padding: 14px; }
+  .topbar  { padding: 0 14px; height: 56px; }
+  .tabs    { padding: 10px 14px 0; top: 56px; }
+  .schedule-row { grid-template-columns: 54px 1fr; }
+  .nav-date { min-width: 120px; font-size: 13px; }
+  .table-wrap { overflow-x: auto; }
+  table { min-width: 540px; }
+  .login-card { padding: 32px 24px; }
+}
 </style>
 </head>
 <body>
@@ -128,16 +581,29 @@ tr:hover td { background: rgba(79,124,255,0.04); }
 <!-- LOGIN -->
 <div class="login-wrap" id="login-wrap">
   <div class="login-card">
-    <div class="login-logo">🦷</div>
+    <button class="login-logo-btn" onclick="openClinicModal()" aria-label="О клинике">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3C9.5 3 7.5 4.5 6.5 7C5.8 5.8 4.6 5 3 5C1.3 7 2.1 10 3.5 12C4.3 13.3 5 14.5 5 17C5 19.5 6 21 7.5 21C9 21 9.5 19 10 17C10.5 15 11 14 12 14C13 14 13.5 15 14 17C14.5 19 15 21 16.5 21C18 21 19 19.5 19 17C19 14.5 19.7 13.3 20.5 12C21.9 10 22.7 7 21 5C19.4 5 18.2 5.8 17.5 7C16.5 4.5 14.5 3 12 3Z"/>
+      </svg>
+    </button>
     <div class="login-title">Доктор Смайл</div>
     <div class="login-sub">Административная панель</div>
     <div style="position:relative;margin-bottom:12px">
-      <input class="login-input" type="password" id="pwd-input" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')doLogin()" autofocus style="margin-bottom:0;padding-right:44px" />
-      <button onclick="togglePwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--text2)" id="eye-btn">
-        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <input class="login-input" type="password" id="pwd-input"
+        placeholder="Введите пароль"
+        onkeydown="if(event.key==='Enter')doLogin()"
+        autofocus style="margin-bottom:0;padding-right:44px" />
+      <button onclick="togglePwd()"
+        style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--text2);display:flex;align-items:center;transition:color 0.2s ease"
+        id="eye-btn">
+        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
       </button>
     </div>
-    <button class="login-btn" onclick="doLogin()">Войти →</button>
+    <button class="login-btn" onclick="doLogin()">Войти</button>
     <div class="login-err hidden" id="login-err">Неверный пароль</div>
   </div>
 </div>
@@ -145,7 +611,11 @@ tr:hover td { background: rgba(79,124,255,0.04); }
 <!-- APP -->
 <div class="app" id="app">
   <div class="topbar">
-    <div class="topbar-logo">🦷</div>
+    <button class="topbar-logo-btn" onclick="openClinicModal()" aria-label="О клинике">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3C9.5 3 7.5 4.5 6.5 7C5.8 5.8 4.6 5 3 5C1.3 7 2.1 10 3.5 12C4.3 13.3 5 14.5 5 17C5 19.5 6 21 7.5 21C9 21 9.5 19 10 17C10.5 15 11 14 12 14C13 14 13.5 15 14 17C14.5 19 15 21 16.5 21C18 21 19 19.5 19 17C19 14.5 19.7 13.3 20.5 12C21.9 10 22.7 7 21 5C19.4 5 18.2 5.8 17.5 7C16.5 4.5 14.5 3 12 3Z"/>
+      </svg>
+    </button>
     <div>
       <div class="topbar-title">Доктор Смайл</div>
       <div class="topbar-sub">Административная панель</div>
@@ -155,9 +625,39 @@ tr:hover td { background: rgba(79,124,255,0.04); }
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('schedule')" id="tab-schedule">📅 Расписание</div>
-    <div class="tab" onclick="showTab('all')" id="tab-all">📋 Все записи</div>
-    <div class="tab" onclick="showTab('stats')" id="tab-stats">📊 Статистика</div>
+    <div class="tab active" onclick="showTab('schedule')" id="tab-schedule">
+      <span class="tab-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2.5"/>
+          <path d="M3 10h18M8 2v4M16 2v4"/>
+          <circle cx="9" cy="15" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="15" r="1.2" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      Расписание
+    </div>
+    <div class="tab" onclick="showTab('all')" id="tab-all">
+      <span class="tab-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2"/>
+          <path d="M9 7h6M9 11h6M9 15h4"/>
+          <path d="M9 2v3h6V2"/>
+        </svg>
+      </span>
+      Все записи
+    </div>
+    <div class="tab" onclick="showTab('stats')" id="tab-stats">
+      <span class="tab-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6"  y1="20" x2="6"  y2="14"/>
+          <line x1="2"  y1="20" x2="22" y2="20"/>
+        </svg>
+      </span>
+      Статистика
+    </div>
   </div>
 
   <div class="content">
@@ -168,7 +668,7 @@ tr:hover td { background: rgba(79,124,255,0.04); }
         <button class="nav-btn" onclick="scheduleDay(-1)">← Назад</button>
         <div class="nav-date" id="schedule-date-label">—</div>
         <button class="nav-btn" onclick="scheduleDay(+1)">Вперёд →</button>
-        <input type="date" id="date-picker" onchange="pickDate(this.value)" style="padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer" />
+        <input type="date" id="date-picker" class="date-picker-admin" onchange="pickDate(this.value)" />
         <button class="today-btn" onclick="goToday()">Сегодня</button>
       </div>
       <div id="schedule-content"><div class="loading"></div></div>
@@ -177,12 +677,14 @@ tr:hover td { background: rgba(79,124,255,0.04); }
     <!-- ВСЕ ЗАПИСИ -->
     <div class="page" id="page-all">
       <div class="toolbar">
-        <input class="search-input" type="text" placeholder="🔍 Поиск по имени, телефону, врачу..." oninput="filterTable()" id="search-input" />
+        <input class="search-input" type="text"
+          placeholder="Поиск по имени, телефону, врачу..."
+          oninput="filterTable()" id="search-input" />
         <select class="filter-select" onchange="filterTable()" id="filter-status">
           <option value="">Все статусы</option>
-          <option value="Подтверждено">✅ Подтверждено</option>
-          <option value="Перенесено">🔄 Перенесено</option>
-          <option value="Отменено">❌ Отменено</option>
+          <option value="Подтверждено">Подтверждено</option>
+          <option value="Перенесено">Перенесено</option>
+          <option value="Отменено">Отменено</option>
         </select>
         <select class="filter-select" onchange="filterTable()" id="filter-period">
           <option value="">Все даты</option>
@@ -191,7 +693,15 @@ tr:hover td { background: rgba(79,124,255,0.04); }
           <option value="future">Будущие</option>
           <option value="past">Прошедшие</option>
         </select>
-        <button class="refresh-btn" onclick="loadData()" id="refresh-btn">↻ Обновить</button>
+        <button class="refresh-btn" onclick="loadData()" id="refresh-btn">
+          <span class="r-ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </span>
+          Обновить
+        </button>
       </div>
       <div class="table-wrap">
         <table>
@@ -218,9 +728,95 @@ tr:hover td { background: rgba(79,124,255,0.04); }
       <div class="stats-grid" id="stats-grid">
         <div class="loading"></div>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px" id="stats-doctors"></div>
+      <div class="stats-doctors-wrap" id="stats-doctors"></div>
     </div>
 
+  </div>
+</div>
+
+<!-- ── MODAL О КЛИНИКЕ ── -->
+<div class="modal-overlay hidden" id="clinic-modal" onclick="closeClinicModal(event)">
+  <div class="modal-sheet" style="max-height:92vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;margin-bottom:20px">
+      <div class="clinic-logo-display">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3C9.5 3 7.5 4.5 6.5 7C5.8 5.8 4.6 5 3 5C1.3 7 2.1 10 3.5 12C4.3 13.3 5 14.5 5 17C5 19.5 6 21 7.5 21C9 21 9.5 19 10 17C10.5 15 11 14 12 14C13 14 13.5 15 14 17C14.5 19 15 21 16.5 21C18 21 19 19.5 19 17C19 14.5 19.7 13.3 20.5 12C21.9 10 22.7 7 21 5C19.4 5 18.2 5.8 17.5 7C16.5 4.5 14.5 3 12 3Z"/>
+        </svg>
+      </div>
+      <div style="font-size:20px;font-weight:800;margin-top:14px;color:var(--text)">Доктор Смайл</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:4px">Стоматологическая клиника · Москва</div>
+    </div>
+
+    <div class="clinic-stats-row">
+      <div class="clinic-stat"><div class="clinic-stat-num">2018</div><div class="clinic-stat-lbl">основана</div></div>
+      <div class="clinic-stat"><div class="clinic-stat-num">3</div><div class="clinic-stat-lbl">специалиста</div></div>
+      <div class="clinic-stat"><div class="clinic-stat-num">5000+</div><div class="clinic-stat-lbl">пациентов</div></div>
+    </div>
+
+    <div class="clinic-features">
+      <div class="clinic-feature">
+        <div class="clinic-feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="clinic-feature-title">Гарантия качества</div>
+          <div class="clinic-feature-desc">Гарантия на все виды работ. Бесплатные консультации при повторном обращении в течение года.</div>
+        </div>
+      </div>
+      <div class="clinic-feature">
+        <div class="clinic-feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </div>
+        <div>
+          <div class="clinic-feature-title">Современное оборудование</div>
+          <div class="clinic-feature-desc">Цифровой рентген, 3D-томография, лазерное лечение кариеса без боли и бормашины.</div>
+        </div>
+      </div>
+      <div class="clinic-feature">
+        <div class="clinic-feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="clinic-feature-title">Философия клиники</div>
+          <div class="clinic-feature-desc">Безболезненное лечение, максимальный комфорт пациента и долгосрочный предсказуемый результат.</div>
+        </div>
+      </div>
+      <div class="clinic-feature">
+        <div class="clinic-feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="clinic-feature-title">Достижения</div>
+          <div class="clinic-feature-desc">Рейтинг 4.9 на Яндекс.Картах. Победитель городского конкурса «Лучшая стоматология 2023».</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-info">
+      <div class="srow">
+        <span class="lbl">Телефон</span>
+        <span class="val" style="color:var(--accent)">+7 (495) 123-45-67</span>
+      </div>
+      <div class="srow">
+        <span class="lbl">Адрес</span>
+        <span class="val">ул. Профсоюзная, 87</span>
+      </div>
+      <div class="srow">
+        <span class="lbl">Режим работы</span>
+        <span class="val">Ежедневно 8:00–20:00</span>
+      </div>
+    </div>
+
+    <button class="btn btn-close" onclick="closeClinicModal()">Закрыть</button>
   </div>
 </div>
 
@@ -230,7 +826,19 @@ let pwd = '';
 let allBookings = [];
 let scheduleDate = new Date();
 
-// ── Время в шапке ────────────────────────────────────────────────────────────
+/* SVG strings used in JS-rendered HTML */
+const SVG = {
+  ok:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  no:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  mv:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>`,
+  doc:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a2 2 0 0 1 .44-2.14l.95-1.27a2 2 0 0 0 .45-2.11A12.84 12.84 0 0 1 5.83 5.17a2 2 0 0 0-2-1.72h-3a2 2 0 0 0-2 2.18A19.79 19.79 0 0 0 1.9 14.26 19.5 19.5 0 0 0 13.07 21a19.79 19.79 0 0 0 8.63-3.07A2 2 0 0 0 22 16.92z"/></svg>`,
+  list:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>`,
+  cal:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>`,
+  chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>`,
+};
+
+// ── Часы ─────────────────────────────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
   document.getElementById('topbar-time').textContent =
@@ -239,10 +847,12 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ── Логин ────────────────────────────────────────────────────────────────────
+// ── Логин ─────────────────────────────────────────────────────────────────────
 async function doLogin() {
   const p = document.getElementById('pwd-input').value.trim();
   if (!p) return;
+  const btn = document.querySelector('.login-btn');
+  btn.textContent = 'Входим...'; btn.disabled = true;
   try {
     const r = await fetch(`${API}/api/admin/all_bookings?password=${encodeURIComponent(p)}`);
     if (r.ok) {
@@ -261,6 +871,7 @@ async function doLogin() {
     document.getElementById('login-err').textContent = 'Ошибка соединения с сервером';
     document.getElementById('login-err').classList.remove('hidden');
   }
+  btn.textContent = 'Войти'; btn.disabled = false;
 }
 
 function logout() {
@@ -270,22 +881,43 @@ function logout() {
   document.getElementById('pwd-input').value = '';
 }
 
+function togglePwd() {
+  const inp  = document.getElementById('pwd-input');
+  const icon = document.getElementById('eye-icon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    inp.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+// ── О клинике modal ───────────────────────────────────────────────────────────
+function openClinicModal() {
+  document.getElementById('clinic-modal').classList.remove('hidden');
+}
+function closeClinicModal(e) {
+  if (!e || e.target === document.getElementById('clinic-modal'))
+    document.getElementById('clinic-modal').classList.add('hidden');
+}
+
 // ── Загрузка данных ───────────────────────────────────────────────────────────
 async function loadData() {
   const btn = document.getElementById('refresh-btn');
-  btn.textContent = '↻ Загрузка...'; btn.disabled = true;
+  btn.classList.add('spinning'); btn.disabled = true;
   try {
-    const r = await fetch(`${API}/api/admin/all_bookings?password=${encodeURIComponent(pwd)}`);
+    const r    = await fetch(`${API}/api/admin/all_bookings?password=${encodeURIComponent(pwd)}`);
     const data = await r.json();
     allBookings = data.bookings || [];
     renderAll();
     renderStats(data.stats || {});
     renderSchedule();
   } catch(e) { alert('Ошибка загрузки'); }
-  btn.textContent = '↻ Обновить'; btn.disabled = false;
+  btn.classList.remove('spinning'); btn.disabled = false;
 }
 
-// ── Табы ─────────────────────────────────────────────────────────────────────
+// ── Табы ──────────────────────────────────────────────────────────────────────
 function showTab(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -293,16 +925,12 @@ function showTab(name) {
   document.getElementById(`tab-${name}`).classList.add('active');
 }
 
-// ── Хелперы дат ──────────────────────────────────────────────────────────────
+// ── Хелперы дат ───────────────────────────────────────────────────────────────
 function parseDt(str) {
   if (!str) return null;
   const m = str.match(/(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2})/);
   if (!m) return null;
   return new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5]);
-}
-
-function fmtDate(d) {
-  return d.toLocaleDateString('ru', { day:'2-digit', month:'long', year:'numeric', weekday:'long' });
 }
 
 function isToday(dt) {
@@ -314,7 +942,7 @@ function isSameDay(dt, d) {
   return dt && dt.getDate()===d.getDate() && dt.getMonth()===d.getMonth() && dt.getFullYear()===d.getFullYear();
 }
 
-// ── Таблица всех записей ─────────────────────────────────────────────────────
+// ── Таблица всех записей ──────────────────────────────────────────────────────
 function filterTable() {
   const q      = document.getElementById('search-input').value.toLowerCase();
   const status = document.getElementById('filter-status').value;
@@ -342,12 +970,11 @@ function renderAll() { filterTable(); }
 
 function renderTableRows(rows) {
   const now = new Date();
-  const sc = { 'Подтверждено':'badge-ok','Отменено':'badge-no','Перенесено':'badge-mv' };
-  const si = { 'Подтверждено':'✅','Отменено':'❌','Перенесено':'🔄' };
+  const sc  = { 'Подтверждено':'badge-ok','Отменено':'badge-no','Перенесено':'badge-mv' };
 
   if (!rows.length) {
     document.getElementById('table-body').innerHTML =
-      '<tr><td colspan="6"><div class="empty-state"><span class="ei">📋</span>Записей не найдено</div></td></tr>';
+      `<tr><td colspan="6"><div class="empty-state"><span class="ei">${SVG.list}</span>Записей не найдено</div></td></tr>`;
     document.getElementById('table-count').textContent = '';
     return;
   }
@@ -356,6 +983,7 @@ function renderTableRows(rows) {
     const dt   = parseDt(b.datetime);
     const past = dt && dt < now;
     const [datePart, timePart] = b.datetime.split(' ');
+    const badgeIcon = b.status === 'Подтверждено' ? SVG.ok : b.status === 'Отменено' ? SVG.no : SVG.mv;
     return `<tr class="${past ? 'past' : ''}">
       <td class="name-cell">${b.name || '—'}</td>
       <td class="phone-cell">${formatPhone(b.phone)}</td>
@@ -364,12 +992,12 @@ function renderTableRows(rows) {
         <div class="dt-date">${datePart || '—'}</div>
         <div class="dt-time">${timePart || ''}</div>
       </td>
-      <td><span class="badge ${sc[b.status]||'badge-ok'}">${si[b.status]||'✅'} ${b.status}</span></td>
+      <td><span class="badge ${sc[b.status]||'badge-ok'}">${badgeIcon} ${b.status}</span></td>
       <td>
         <select class="status-select" onchange="changeStatus(${b.row}, this.value, this)">
-          <option value="Подтверждено" ${b.status==='Подтверждено'?'selected':''}>✅ Подтверждено</option>
-          <option value="Перенесено"   ${b.status==='Перенесено'  ?'selected':''}>🔄 Перенесено</option>
-          <option value="Отменено"     ${b.status==='Отменено'    ?'selected':''}>❌ Отменено</option>
+          <option value="Подтверждено" ${b.status==='Подтверждено'?'selected':''}>Подтверждено</option>
+          <option value="Перенесено"   ${b.status==='Перенесено'  ?'selected':''}>Перенесено</option>
+          <option value="Отменено"     ${b.status==='Отменено'    ?'selected':''}>Отменено</option>
         </select>
       </td>
     </tr>`;
@@ -390,7 +1018,7 @@ function shortDoctor(name) {
   return name;
 }
 
-// ── Изменение статуса ────────────────────────────────────────────────────────
+// ── Изменение статуса ─────────────────────────────────────────────────────────
 async function changeStatus(row, newStatus, el) {
   el.disabled = true;
   try {
@@ -413,27 +1041,15 @@ async function changeStatus(row, newStatus, el) {
   el.disabled = false;
 }
 
-// ── Расписание ───────────────────────────────────────────────────────────────
-const HOURS = [8,9,10,11,12,13,14,15,16,17,18,19];
+// ── Расписание ────────────────────────────────────────────────────────────────
+const HOURS    = [8,9,10,11,12,13,14,15,16,17,18,19];
 const WEEKDAYS = ['вс','пн','вт','ср','чт','пт','сб'];
-const MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const MONTHS   = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 
 function scheduleDay(delta) {
   scheduleDate = new Date(scheduleDate);
   scheduleDate.setDate(scheduleDate.getDate() + delta);
   renderSchedule();
-}
-
-function togglePwd() {
-  const inp = document.getElementById('pwd-input');
-  const icon = document.getElementById('eye-icon');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  } else {
-    inp.type = 'password';
-    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  }
 }
 
 function pickDate(val) {
@@ -454,7 +1070,6 @@ function renderSchedule() {
   const wday = WEEKDAYS[d.getDay()];
   document.getElementById('schedule-date-label').textContent =
     `${wday}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-  // Синхронизируем пикер
   const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   document.getElementById('date-picker').value = iso;
 
@@ -464,7 +1079,6 @@ function renderSchedule() {
   });
 
   const sc = { 'Подтверждено':'booked','Отменено':'cancelled','Перенесено':'rescheduled' };
-  const si = { 'Подтверждено':'✅','Отменено':'❌','Перенесено':'🔄' };
 
   const rows = HOURS.map(h => {
     const timeStr = `${String(h).padStart(2,'0')}:00`;
@@ -475,14 +1089,16 @@ function renderSchedule() {
     const isPast = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h+1) < now;
 
     if (booking) {
+      const statusIcon = booking.status === 'Подтверждено' ? SVG.ok : booking.status === 'Отменено' ? SVG.no : SVG.mv;
       return `<div class="schedule-row">
         <div class="time-label">${timeStr}</div>
         <div class="slot-cell ${sc[booking.status]||'booked'} ${isPast?'past-slot':''}">
-          <div>
-            <div class="slot-name">${si[booking.status]} ${booking.name || '—'}</div>
-            <div class="slot-doctor">👨‍⚕️ ${booking.doctor}</div>
-            <div class="slot-phone">📞 ${formatPhone(booking.phone)}</div>
+          <div style="flex:1">
+            <div class="slot-name">${booking.name || '—'}</div>
+            <div class="slot-meta">${SVG.doc} ${booking.doctor}</div>
+            <div class="slot-phone">${SVG.phone} ${formatPhone(booking.phone)}</div>
           </div>
+          <span class="badge ${sc[booking.status]==='booked'?'badge-ok':sc[booking.status]==='cancelled'?'badge-no':'badge-mv'}" style="flex-shrink:0;margin-left:10px">${statusIcon}</span>
         </div>
       </div>`;
     } else {
@@ -499,13 +1115,12 @@ function renderSchedule() {
 
 // ── Статистика ────────────────────────────────────────────────────────────────
 function calcStats() {
-  const now   = new Date();
-  const today = now.toLocaleDateString('ru');
+  const now = new Date();
   let confirmed=0, cancelled=0, rescheduled=0, todayCount=0, total=allBookings.length;
   allBookings.forEach(b => {
-    if (b.status==='Подтверждено')  confirmed++;
-    if (b.status==='Отменено')      cancelled++;
-    if (b.status==='Перенесено')    rescheduled++;
+    if (b.status==='Подтверждено') confirmed++;
+    if (b.status==='Отменено')     cancelled++;
+    if (b.status==='Перенесено')   rescheduled++;
     const dt = parseDt(b.datetime);
     if (dt && isToday(dt) && b.status!=='Отменено') todayCount++;
   });
@@ -514,14 +1129,33 @@ function calcStats() {
 
 function renderStats(stats) {
   document.getElementById('stats-grid').innerHTML = `
-    <div class="stat-card white"><div class="stat-icon">📋</div><div class="stat-val">${stats.total||0}</div><div class="stat-lbl">Всего записей</div></div>
-    <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val">${stats.confirmed||0}</div><div class="stat-lbl">Подтверждено</div></div>
-    <div class="stat-card red"><div class="stat-icon">❌</div><div class="stat-val">${stats.cancelled||0}</div><div class="stat-lbl">Отменено</div></div>
-    <div class="stat-card warn"><div class="stat-icon">🔄</div><div class="stat-val">${stats.rescheduled||0}</div><div class="stat-lbl">Перенесено</div></div>
-    <div class="stat-card blue"><div class="stat-icon">📅</div><div class="stat-val">${stats.today||0}</div><div class="stat-lbl">Сегодня</div></div>
+    <div class="stat-card white">
+      <div class="stat-icon">${SVG.list}</div>
+      <div class="stat-val">${stats.total||0}</div>
+      <div class="stat-lbl">Всего записей</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">${SVG.ok}</div>
+      <div class="stat-val">${stats.confirmed||0}</div>
+      <div class="stat-lbl">Подтверждено</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-icon">${SVG.no}</div>
+      <div class="stat-val">${stats.cancelled||0}</div>
+      <div class="stat-lbl">Отменено</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-icon">${SVG.mv}</div>
+      <div class="stat-val">${stats.rescheduled||0}</div>
+      <div class="stat-lbl">Перенесено</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">${SVG.cal}</div>
+      <div class="stat-val">${stats.today||0}</div>
+      <div class="stat-lbl">Сегодня</div>
+    </div>
   `;
 
-  // Статистика по врачам
   const doctorMap = {};
   allBookings.forEach(b => {
     if (!doctorMap[b.doctor]) doctorMap[b.doctor] = { total:0, confirmed:0, cancelled:0 };
@@ -531,20 +1165,20 @@ function renderStats(stats) {
   });
 
   const doctorRows = Object.entries(doctorMap).map(([doc, s]) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+    <div class="doctor-stat-row">
       <div>
-        <div style="font-weight:600;font-size:14px">${doc}</div>
+        <div style="font-weight:600;font-size:14px;color:var(--text)">${doc}</div>
         <div style="font-size:12px;color:var(--text2);margin-top:3px">Всего: ${s.total}</div>
       </div>
-      <div style="display:flex;gap:10px;font-size:13px">
-        <span style="color:var(--success);font-weight:600">✅ ${s.confirmed}</span>
-        <span style="color:var(--danger);font-weight:600">❌ ${s.cancelled}</span>
+      <div class="doctor-stat-badges">
+        <span class="doctor-stat-ok">${SVG.ok} ${s.confirmed}</span>
+        <span class="doctor-stat-no">${SVG.no} ${s.cancelled}</span>
       </div>
     </div>
   `).join('');
 
   document.getElementById('stats-doctors').innerHTML = `
-    <div style="font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px">По врачам</div>
+    <div class="stats-doctors-title">${SVG.doc} По врачам</div>
     ${doctorRows || '<div style="color:var(--text2);padding:20px 0">Нет данных</div>'}
   `;
 }

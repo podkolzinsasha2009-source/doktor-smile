@@ -2726,6 +2726,7 @@ function renderStats(stats) {
 </script>
 </body>
 </html>
+
 """
 
 _LOGIN_HTML = r"""<!DOCTYPE html>
