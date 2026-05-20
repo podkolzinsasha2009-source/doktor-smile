@@ -188,12 +188,8 @@ _HTML = r"""
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 5%,  rgba(14, 60, 140, 0.40) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 90% 90%, rgba(5, 28, 100, 0.32) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(8, 25, 80, 0.15) 0%, transparent 70%),
-    #020c1b;
-  background-attachment: fixed;
+  background: radial-gradient(circle at 20% 20%, #082046, transparent 40%), radial-gradient(circle at 80% 80%, #031430, transparent 40%), #020c1b !important;
+  background-attachment: fixed !important;
   color: var(--text);
   min-height: 100vh;
   font-size: 14px;
@@ -2115,6 +2111,17 @@ tr:hover td { background: rgba(74,168,255,0.04); }
   table { min-width: 540px; }
   .login-card { padding: 32px 24px; }
 }
+body {
+    background: radial-gradient(circle at 20% 20%, #082046, transparent 40%), radial-gradient(circle at 80% 80%, #031430, transparent 40%), #020c1b !important;
+    background-attachment: fixed !important;
+    color: #ffffff !important;
+}
+.glass, .card, .modal-content, form, .login-card, [id^="login-form"] {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(35px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(35px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
 </style>
 </head>
 <body>
@@ -2779,6 +2786,17 @@ _LOGIN_HTML = r"""<!DOCTYPE html>
   }
   button:hover { background: #2888e8; }
   .err { color: #ff453a; font-size: 13px; text-align: center; margin-top: 14px; }
+body {
+    background: radial-gradient(circle at 20% 20%, #082046, transparent 40%), radial-gradient(circle at 80% 80%, #031430, transparent 40%), #020c1b !important;
+    background-attachment: fixed !important;
+    color: #ffffff !important;
+}
+.glass, .card, .modal-content, form, .login-card, [id^="login-form"] {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(35px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(35px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
 </style>
 </head>
 <body>
