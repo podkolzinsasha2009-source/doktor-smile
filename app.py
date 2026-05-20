@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -2813,7 +2813,7 @@ label {
   <div class="logo">🦷</div>
   <h1>Доктор Смайл</h1>
   <div class="sub">Панель администратора</div>
-  <form method="get" action="/secret-admin-panel">
+  <form method="post" action="/secret-admin-panel">
     <label for="pwd">Пароль</label>
     <div class="pwd-wrap">
       <input id="pwd" type="password" name="password" placeholder="Введите пароль" autofocus />
@@ -2843,13 +2843,17 @@ function togglePwd() {
 
 
 @app.get("/secret-admin-panel", response_class=HTMLResponse)
-def get_admin_panel(password: str = None):
+def get_admin_panel():
+    return HTMLResponse(_LOGIN_HTML.replace("{error}", ""))
+
+
+@app.post("/secret-admin-panel", response_class=HTMLResponse)
+async def post_admin_panel(password: str = Form(...)):
     expected = os.environ.get("ADMIN_PASSWORD", "doktor2026").strip()
-    if (password or "").strip() != expected:
-        error_block = '<p class="err">Неверный пароль</p>' if password is not None else ""
+    if password.strip() != expected:
         return HTMLResponse(
-            _LOGIN_HTML.replace("{error}", error_block),
-            status_code=403 if password is not None else 200,
+            _LOGIN_HTML.replace("{error}", '<p class="err">Неверный пароль</p>'),
+            status_code=403,
         )
     return _ADMIN_HTML
 
