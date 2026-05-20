@@ -2798,10 +2798,8 @@ _LOGIN_HTML = r"""<!DOCTYPE html>
 
 @app.get("/secret-admin-panel", response_class=HTMLResponse)
 def get_admin_panel(password: str = None):
-    expected = os.environ.get("ADMIN_PASSWORD", "")
-    if not expected:
-        return HTMLResponse("<h1>ADMIN_PASSWORD not set on server</h1>", status_code=503)
-    if password != expected:
+    expected = os.environ.get("ADMIN_PASSWORD", "doktor2026").strip()
+    if (password or "").strip() != expected:
         error_block = '<p class="err">Неверный пароль</p>' if password is not None else ""
         return HTMLResponse(
             _LOGIN_HTML.replace("{error}", error_block),
