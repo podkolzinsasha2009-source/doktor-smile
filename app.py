@@ -2853,8 +2853,8 @@ def get_admin_panel():
 
 @app.post("/secret-admin-panel", response_class=HTMLResponse)
 async def post_admin_panel(password: str = Form(..., alias="password")):
-    expected = os.environ.get("ADMIN_PASSWORD", "doktor2026").strip()
-    if password.strip() != expected:
+    print(f"DEBUG PASSWORD RECEIVED: '{password}'")
+    if password.strip() != "doktor2026":
         return HTMLResponse(
             _LOGIN_HTML.replace("{error}", '<p class="err">Неверный пароль</p>'),
             status_code=403,
