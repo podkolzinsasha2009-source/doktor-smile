@@ -143,6 +143,12 @@ class ChatRequest(BaseModel):
     message: str
 
 
+class UpdateStatusRequest(BaseModel):
+    password: str
+    row: int
+    status: str
+
+
 # ── Эндпоинты ──────────────────────────────────────────────────────────────
 
 _HTML = r"""
@@ -2974,6 +2980,78 @@ async def chat(req: ChatRequest):
             return {"reply": data["choices"][0]["message"]["content"]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Admin API ───────────────────────────────────────────────────────────────
+
+ADMIN_PASSWORD = "doktor2026"
+
+
+@app.get("/api/admin/all_bookings")
+def admin_all_bookings(password: str):
+    if password.strip() != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    sheet = get_sheet()
+    all_values = sheet.get_all_values()
+    if not all_values:
+        return {"bookings": [], "stats": {}}
+
+    headers = [h.strip() for h in all_values[0]]
+    def col(name, fallback):
+        try:
+            return headers.index(name)
+        except ValueError:
+            return fallback
+
+    idx_first   = col("Имя",          0)
+    idx_last    = col("Фамилия",       1)
+    idx_phone   = col("Телефон",       2)
+    idx_doctor  = col("Врач",          3)
+    idx_dt      = col("Дата и время",  4)
+    idx_status  = col("Статус",        5)
+
+    bookings = []
+    now_str = datetime.now(MOSCOW_TZ).strftime("%d.%m.%Y")
+    stats = {"total": 0, "confirmed": 0, "cancelled": 0, "rescheduled": 0, "today": 0}
+
+    for i, row in enumerate(all_values[1:], start=2):  # row 2 = first data row
+        while len(row) <= max(idx_first, idx_last, idx_phone, idx_doctor, idx_dt, idx_status):
+            row.append("")
+        name = f"{row[idx_first]} {row[idx_last]}".strip()
+        dt   = row[idx_dt].strip()
+        status = row[idx_status].strip() or "Подтверждено"
+        bookings.append({
+            "row":      i,
+            "name":     name,
+            "phone":    row[idx_phone].strip(),
+            "doctor":   row[idx_doctor].strip(),
+            "datetime": dt,
+            "status":   status,
+        })
+        stats["total"] += 1
+        if status == "Подтверждено":
+            stats["confirmed"] += 1
+        elif status == "Отменено":
+            stats["cancelled"] += 1
+        elif status == "Перенесено":
+            stats["rescheduled"] += 1
+        if dt.startswith(now_str):
+            stats["today"] += 1
+
+    return {"bookings": bookings, "stats": stats}
+
+
+@app.post("/api/admin/update_status")
+def admin_update_status(req: UpdateStatusRequest):
+    if req.password.strip() != ADMIN_PASSWORD:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    allowed = {"Подтверждено", "Перенесено", "Отменено"}
+    if req.status not in allowed:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    sheet = get_sheet()
+    # Column F = index 6 (1-based) = Статус
+    sheet.update_cell(req.row, 6, req.status)
+    return {"ok": True}
 
 
 # ── Debug (убери после проверки) ────────────────────────────────────────────
