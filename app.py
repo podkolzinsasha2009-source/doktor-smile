@@ -145,7 +145,7 @@ class ChatRequest(BaseModel):
 
 # ── Эндпоинты ──────────────────────────────────────────────────────────────
 
-_HTML = """
+_HTML = r"""
 <!DOCTYPE html>
 <html lang="ru">
 <head>
